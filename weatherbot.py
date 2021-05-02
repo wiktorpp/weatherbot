@@ -13,15 +13,12 @@ async def on_ready():
 async def on_message(message):
     if message.content.startswith("$weather"):
         try:
-            data = eval(
-                urlopen(
-                    f"http://api.openweathermap.org/data/2.5/weather?q={str(message.content)[9:].replace(' ', '')}&appid={weatherToken}&units=metric"
-                ).read().decode()
-            )
+            data = eval(urlopen(
+                f"http://api.openweathermap.org/data/2.5/weather?q={str(message.content)[9:].replace(' ', '')}&appid={weatherToken}&units=metric"
+            ).read().decode())
         except HTTPError:
             await message.channel.send("Usage: $weather <place>")
         else:
-            url = ""
             embed = {
                 "author": {
                     "name": data["weather"][0]["description"],
@@ -31,17 +28,11 @@ async def on_message(message):
                     {
                         "name": "temperature:",
                         "value": str(round(data["main"]["temp"])) + "°C"
-                    },
-                    #{
-                    #    "name": "field2",
-                    #    "value": "hi2"
-                    #}
+                    }
                 ],
-                #"footer": {"text": "footer"},
                 "color": 0x00ccff
             }
-            await message.channel.send(
-                embed=discord.Embed.from_dict(embed)
-            )
+
+            await message.channel.send(embed=discord.Embed.from_dict(embed))
 
 client.run(discordToken)
