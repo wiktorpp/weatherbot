@@ -12,32 +12,36 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content.startswith("$weather"):
-        data = eval(
-            urlopen(
-                f"http://api.openweathermap.org/data/2.5/weather?q={str(message.content)[9:].replace(' ', '')}&appid={weatherToken}&units=metric"
-            ).read().decode()
-        )
-        url = ""
-        embed = {
-            "author": {
-                "name": data["weather"][0]["description"],
-                "icon_url": f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png"
-            },
-            "fields": [
-                {
-                    "name": "temperature:",
-                    "value": str(round(data["main"]["temp"])) + "°C"
+        try:
+            data = eval(
+                urlopen(
+                    f"http://api.openweathermap.org/data/2.5/weather?q={str(message.content)[9:].replace(' ', '')}&appid={weatherToken}&units=metric"
+                ).read().decode()
+            )
+        except HTTPError:
+            await message.channel.send("Usage: $weather <place>")
+        else:
+            url = ""
+            embed = {
+                "author": {
+                    "name": data["weather"][0]["description"],
+                    "icon_url": f"http://openweathermap.org/img/wn/{data['weather'][0]['icon']}@2x.png"
                 },
-                #{
-                #    "name": "field2",
-                #    "value": "hi2"
-                #}
-            ],
-            #"footer": {"text": "footer"},
-            "color": 0x00ccff
-        }
-        await message.channel.send(
-            embed=discord.Embed.from_dict(embed)
-        )
+                "fields": [
+                    {
+                        "name": "temperature:",
+                        "value": str(round(data["main"]["temp"])) + "°C"
+                    },
+                    #{
+                    #    "name": "field2",
+                    #    "value": "hi2"
+                    #}
+                ],
+                #"footer": {"text": "footer"},
+                "color": 0x00ccff
+            }
+            await message.channel.send(
+                embed=discord.Embed.from_dict(embed)
+            )
 
 client.run(discordToken)
